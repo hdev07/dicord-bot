@@ -1,0 +1,20 @@
+{
+  "name": "discord-chambecario",
+  "version": "1.0.1",
+  "description": "Simple discord bot script for responding to ping message from user.",
+  "main": "bot.js",
+  "keywords": [],
+  "author": "hdev07",
+  "repository": "https://github.com/hdev07/dicord-bot",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.1.0"
+  },
+  "engines": {
+    "node": "12.x"
+  }
+}
