@@ -92,43 +92,79 @@ client.on('message', async message => {// Comandos del bot *** ! ***
 		message.channel.send(embed);
 	} else if (message.content === `${prefix}ayuda`) {// ayuda *** !ayuda ***
 
-		const exampleEmbed = new Discord.MessageEmbed()
+		const embedAyuda = new Discord.MessageEmbed()
 			.setColor('#3D85C6')
 			.setTitle(`Comandos de ${client.user.username}`)
 			.setAuthor(message.author.username, message.author.avatarURL() )
 			.setThumbnail(client.user.avatarURL())
 			.addFields(
 				{ name: 'Obten tu avatar', value: '``!avatar``'},
+				{ name: 'Obten el avatar de alguien más', value: '``!avatar [mención]``'},
 				{ name: 'Busca una definición', value: '``!def [palabra]``'},
 				{ name: 'Información del server', value: '``!serverInfo``'},
 			)
 			.setTimestamp()
 			.setFooter('Bot en desarrollo', client.user.avatarURL() );
 		
-		message.channel.send(exampleEmbed);
-	} else if (message.content === `${prefix}avatar`) {// avatar *** !avatar ***
-			const exampleEmbed = new Discord.MessageEmbed()
+		message.channel.send(embedAyuda);
+
+	} else if (message.content === `${prefix}serverInfo`) {//info del server *** !serverInfo ***
+		const embedServerInfo = new Discord.MessageEmbed()
+			.setColor('#3D85C6')
+			.setAuthor(message.guild.name, message.guild.iconURL())
+			.setThumbnail(message.guild.iconURL())
+			.addFields(
+				{ name: 'ID', value: message.guild.id, inline: true },
+				{ name: 'Region', value: message.guild.region, inline: true },
+				{ name: '\u200B', value: '\u200B' },
+				{ name: 'Dueño del Servidor', value: `@${message.guild.owner.user.username}`, inline: true },
+				{ name: 'Miembros', value: message.guild.memberCount, inline: true },
+			)
+			.setTimestamp()
+			.setFooter('Bot en desarrollo', client.user.avatarURL())
+		message.channel.send(embedServerInfo);
+	} else if (message.content.startsWith(prefix)) {// avatar *** !avatar [mencion]***
+		
+		const withoutPrefix = message.content.slice(prefix.length);
+		const split = withoutPrefix.split(/ +/);
+		const command = split[0];
+		const args = split.slice(1);
+
+		if (command === 'avatar') {
+			if (args[0]) {
+				const user = getUserFromMention(args[0]);
+				
+				if (!user) {
+					return message.send('Utilice una mención adecuada si desea\n ver el avatar de otra persona. ');
+				}
+
+				const embedAvatarMention = new Discord.MessageEmbed()
+					.setColor('#3D85C6')
+					.setTitle(`Apreciemos la hermosura de ${user.username}`)
+					.setImage(user.avatarURL({ format: 'png', dynamic: true, size: 1024 }))
+					.setFooter('Quisiera ser humano para andar con alguien tan hermoso/a como tu ❤️');
+				return message.channel.send(embedAvatarMention);
+			}
+
+			const embedAvatar = new Discord.MessageEmbed()
 				.setColor('#3D85C6')
 				.setTitle(`Apreciemos la hermosura de ${message.author.username}`)
 				.setImage(message.author.avatarURL({ format: 'png', dynamic: true, size: 1024 }))
 				.setFooter('Quisiera ser humano para andar con alguien tan hermoso/a como tu ❤️');
-			
-			message.channel.send(exampleEmbed);
-	} else if (message.content === `${prefix}serverInfo`) {//info del server *** !serverInfo ***
-			const exampleEmbed = new Discord.MessageEmbed()
-				.setColor('#3D85C6')
-				.setAuthor(message.guild.name, message.guild.iconURL())
-				.setThumbnail(message.guild.iconURL())
-				.addFields(
-					{ name: 'ID', value: message.guild.id, inline: true },
-					{ name: 'Region', value: message.guild.region, inline: true },
-					{ name: '\u200B', value: '\u200B' },
-					{ name: 'Dueño del Servidor', value: `@${message.guild.owner.user.username}`, inline: true },
-					{ name: 'Miembros', value: message.guild.memberCount, inline: true },
-				)
-				.setTimestamp()
-				.setFooter('Bot en desarrollo', client.user.avatarURL())
-			message.channel.send( exampleEmbed );
+			return message.channel.send(embedAvatar);
+		};
+
+		function getUserFromMention(mention) {
+			if (!mention) return;
+
+			if (mention.startsWith('<@') && mention.endsWith('>')) {
+				mention = mention.slice(2, -1);
+				if (mention.startsWith('!')) {
+					mention = mention.slice(1);
+				}
+				return client.users.cache.get(mention);
+			}
+		}
 	} else {// Error -Comando no encontrado-
 		return message.channel.send('Ese comando no existe prueva ``!ayuda``.');
 	}
