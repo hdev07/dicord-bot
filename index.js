@@ -9,13 +9,12 @@ const prefix = '!';
 
 const trim = (str, max) => str.length > max ? `${str.slice(0, max - 3)}...` : str;
 
-client.once('ready', () => {
+client.once('ready', () => {//Estatus y login
 	console.log('Ready!');
 	client.user.setActivity('Programar | !ayuda')
 });
 
-// Bienvenida
-const applyText = (canvas, text) => {
+const applyText = (canvas, text) => {// Bienvenida
 	const ctx = canvas.getContext('2d');
 	let fontSize = 70;
 
@@ -26,7 +25,7 @@ const applyText = (canvas, text) => {
 	return ctx.font;
 };
 
-client.on('guildMemberAdd', async member => {
+client.on('guildMemberAdd', async member => {// Bienvenida
 	const channel = member.guild.channels.cache.find(ch => ch.name === 'test-de-bots');
 	if (!channel) return;
 
@@ -62,14 +61,13 @@ client.on('guildMemberAdd', async member => {
 	channel.send(`Hola, ${member} bienvenido/a! a **Colaboradores del senpai!** checa el canal de  #:scroll:-reglas para evitar problemas.`, attachment);
 });
 
-// Definiciones *** !urban ***
-client.on('message', async message => {
+client.on('message', async message => {// Comandos del bot *** ! ***
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const command = args.shift().toLowerCase();
 
-	if (command === 'urban') {
+	if (command === 'def') {// Definiciones *** !def ***
 		if (!args.length) {
 			return message.channel.send('¡Debe proporcionar un término de búsqueda!.');
 		}
@@ -92,32 +90,46 @@ client.on('message', async message => {
 				)
 			.setFooter(`By: ${answer.author}.`);
 		message.channel.send(embed);
-	} else if (message.content === `${prefix}ayuda`) {
+	} else if (message.content === `${prefix}ayuda`) {// ayuda *** !ayuda ***
 
 		const exampleEmbed = new Discord.MessageEmbed()
 			.setColor('#3D85C6')
 			.setTitle(`Comandos de ${client.user.username}`)
 			.setAuthor(message.author.username, message.author.avatarURL() )
-			.setDescription('Algunos comandos disponibles')
 			.setThumbnail(client.user.avatarURL())
 			.addFields(
-				{ name: 'Obten tu avatar', value: '``!avatar``', inline: true },
-				{ name: 'Busca una definición', value: '``!urban [palabra]``', inline: true },
+				{ name: 'Obten tu avatar', value: '``!avatar``'},
+				{ name: 'Busca una definición', value: '``!def [palabra]``'},
+				{ name: 'Información del server', value: '``!serverInfo``'},
 			)
 			.setTimestamp()
 			.setFooter('Bot en desarrollo', client.user.avatarURL() );
 		
-			message.channel.send(exampleEmbed);
-		} else if (message.content === `${prefix}avatar`) {
-
+		message.channel.send(exampleEmbed);
+	} else if (message.content === `${prefix}avatar`) {// avatar *** !avatar ***
 			const exampleEmbed = new Discord.MessageEmbed()
 				.setColor('#3D85C6')
 				.setTitle(`Apreciemos la hermosura de ${message.author.username}`)
 				.setImage(message.author.avatarURL({ format: 'png', dynamic: true, size: 1024 }))
 				.setFooter('Quisiera ser humano para andar con alguien tan hermoso/a como tu ❤️');
 			
-				message.channel.send(exampleEmbed);
-		} else {
+			message.channel.send(exampleEmbed);
+	} else if (message.content === `${prefix}serverInfo`) {//info del server *** !serverInfo ***
+			const exampleEmbed = new Discord.MessageEmbed()
+				.setColor('#3D85C6')
+				.setAuthor(message.guild.name, message.guild.iconURL())
+				.setThumbnail(message.guild.iconURL())
+				.addFields(
+					{ name: 'ID', value: message.guild.id, inline: true },
+					{ name: 'Region', value: message.guild.region, inline: true },
+					{ name: '\u200B', value: '\u200B' },
+					{ name: 'Dueño del Servidor', value: `@${message.guild.owner.user.username}`, inline: true },
+					{ name: 'Miembros', value: message.guild.memberCount, inline: true },
+				)
+				.setTimestamp()
+				.setFooter('Bot en desarrollo', client.user.avatarURL())
+			message.channel.send( exampleEmbed );
+	} else {// Error -Comando no encontrado-
 		return message.channel.send('Ese comando no existe prueva ``!ayuda``.');
 	}
 });
